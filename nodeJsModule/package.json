@@ -1,0 +1,15 @@
+{
+  "name": "nodejsmodule",
+  "version": "1.0.0",
+  "description": "This module will get you familiar with the basics of node js and how it plays into the ethereum ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-price": "0.0.6",
+    "express": "^4.16.3"
+  }
+}
