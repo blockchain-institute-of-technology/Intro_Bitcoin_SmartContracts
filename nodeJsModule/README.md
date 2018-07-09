@@ -34,19 +34,23 @@ These are libraries built by the awesome community which will solve most of your
 ## Creating a simple app.js with an npm package
 There is an npm package for just about any trivial problem you can think of.  In this project we are using an npm package called 'crypto-price' to get and display the prices of cryptocurrencies. 
 
-### require statement 
+### App.js 
 
+#### Import module with the 'require("packagage")' command'' 
     let price = require('crypto-price')
-   Require does three things:
 
--   It loads modules that come bundled with Node.js like file system and HTTP from the  [Node.js API](http://nodejs.org/api/) .
--   It loads third party libraries like Express and Mongoose that you install from npm.
--   It lets you require your own files and modularize the project.
+   require can do three things:
+
+-   Loads modules that come bundled with Node.js like file system and HTTP from the  [Node.js API](http://nodejs.org/api/) .
+-   Loads third party libraries like Express and Mongoose that you install from npm.
+-   Lets you require your own files and modularize the project.
 
 Once we load the module we can call functions from that package through the price variable like `price.getCryptoPrice(base, crypto)` 
 https://www.npmjs.com/package/crypto-price
 
+Once we import the package we can call any function within it.
+
 # Assignment
-Create a simple node.js application and incorporate any npm package.
+Create a simple node.js application and incorporate any npm package. (See example in app.js)
 
 
