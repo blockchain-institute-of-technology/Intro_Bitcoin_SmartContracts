@@ -138,5 +138,128 @@ Output
 	✓ should assert 1 is 1 true
 	1 passing (35ms) 
 
-These accounts should match the ones you see when you open up Ganache
+These accounts should match the ones you see when you open up Ganache.  At this point we can demonstrate that our truffle project is communicating with our local Ganache blockchain.
+
+
+### Smart Contract Creation
+In the contracts directory create a file and name it Helloworld.sol
+
+	pragma solidity ^0.4.23;
+	contract Helloworld {
+		constructor() {
+		}
+	}
+
+The basic skeleton of a Solidity smart contract looks like this.  
+A few things to note 
+
+ - pragma solidity ^0.4.23
+		 - Tells compile what version of solidity to use
+		 - ^ 	indicates 0.4.23 AND up
+ - contract Helloworld
+			 - Analgous to a class in a standard OO language
+ - constructor
+		 - Automatically run during deployment
+
+
+Going back to our test.js lets now import our contract by adding this line to the top
+
+	let HelloWorld = artifacts.require('./Helloworld');
+Now in the terminal to make sure we didn't break anything 
+	
+	truffle test 
+Output 
+
+	Contract: HelloWorld
+
+		Initial tests
+
+		✓ should assert 1 is 1 true
+			1 passing (46ms)
+
+### Writing test to describe the behaviour we want
+The core idea of test driven development is writing tests before you start programming.  
+The functionality we want from our Smart Contract is two fold 
+
+ 1. Set and store a phrase
+ 2. Return the stored passphrase 
+
+
+**Write tests to describe this behavior in test.js**
+
+
+	describe('Phrase tests', function(){
+		it('should be able to set a phrase', ()=>{
+			let expected = 'My First Smart Contract!';
+			Helloworld.setPhrase(expected);
+			let actual = Helloworld.myPhrase();
+			assert.equal(actual, expected);
+		})
+	})
+**Run test** 
+	
+	truffle test
+
+**Output** 
+				
+	1) Contract: HelloWorld
+	Phrase tests
+		should be able to set a phrase:
+	TypeError: Helloworld.setPhrase is not a function
+	at Context.it (test/test.js:17:15)
+
+We can see that we failed because there are no functions setPhrase. Let's add them so we can get pass this error. (This process may seem repetitive and trivial, but it is the most efficient way to write software and simplifies more complicated projects to deal with one error at a time)
+
+**Modify Helloworld.sol to show**
+
+	pragma solidity ^0.4.23;
+	contract Helloworld {
+		bytes32 public myPhrase;
+		constructor() {
+			myPhrase = 'Hello World';
+		}
+		function setPhrase( bytes32 _newPhrase ) public {
+			myPhrase = _newPhrase;
+		} 
+	}
+Note
+ - bytes256
+	 - low level representation of a string
+ - function setPhrase( bytes32## Heading _newPhrase ) public 
+	 - declaration for a public function
+ - No getter method for myPhrase
+	 - This is because all global variables are automatically able to be read off the blockchain
+
+Now we have our contract written we have to tell truffle to deploy it, we do this through a migration
+**Add a file name 2_contract_migration.js under migrations folder**
+	
+	var Helloworld = artifacts.require("./Helloworld.sol");
+
+	module.exports = function(deployer) {
+	  deployer.deploy(Helloworld);
+	};
+This tells truffle to deploy Helloworld to the specified network.  Truffle test command by default deploys contract to local network.
+
+**Modify test.js**
+
+		describe('Phrase tests', ()=>{
+			it('should be able to set a phrase', async ()=>{
+				let inst = await Helloworld.at(Helloworld.address)
+				let expected = 'Hello World'
+				inst.setPhrase(expected)
+				let actual = await inst.myPhrase()
+				assert.equal(expected, actual);
+			})
+	})
+
+Note
+
+ - We had to make the callback function async this is because we have to wait for response to from the blockchain when making contract calls.
+ - We had to replace Helloworld with the inst variable.  This is because the Helloworld exported by the migration is just an abstraction and not the actual contract.
+
+**Run test**
+	
+	truffle test
+	
+All of the tests should pass now, congrats you just programed your first smart contract!
 
